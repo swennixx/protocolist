@@ -237,11 +237,13 @@ def _any_between(sorted_xs: list[float], lo: float, hi: float) -> bool:
     return i < len(sorted_xs) and sorted_xs[i] < hi
 
 
-def merge_turns(spans: list[tuple[float, float]], labels: list[int]) -> list[dict]:
+def merge_turns(spans: list[tuple[float, float]], labels: list[int], max_gap: float = 0.5) -> list[dict]:
+    """Neighbouring phrases of one speaker become one turn — but not across a real pause:
+    that silence is not speech (on AMI, bridging pauses made false alarms 25–39 % of speech)."""
     turns: list[dict] = []
     for (s, e), lab in zip(spans, labels):
         spk = f"SPEAKER_{lab:02d}"
-        if turns and turns[-1]["speaker"] == spk:
+        if turns and turns[-1]["speaker"] == spk and s - turns[-1]["end"] <= max_gap:
             turns[-1]["end"] = round(e, 3)
         else:
             turns.append({"speaker": spk, "start": round(s, 3), "end": round(e, 3)})

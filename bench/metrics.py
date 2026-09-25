@@ -37,46 +37,50 @@ def cer(refs: list[str], hyps: list[str]) -> float:
     return e / max(1, sum(len(normalize(r)) for r in refs))
 
 
-def der(ref: list[dict], hyp: list[dict], collar: float = 0.25, step: float = 0.01) -> dict:
-    """Diarization error rate for non-overlapping speech.
+def der(ref: list[dict], hyp: list[dict], collar: float = 0.25, step: float = 0.01, uem: tuple[float, float] | None = None) -> dict:
+    """Diarization error rate as in NIST md-eval, overlapping speech included.
 
-    ref/hyp: [{"speaker", "start", "end"}]. Frames within `collar` of a reference boundary are
-    not scored (standard practice: boundaries are fuzzy even for human annotators).
-    Speakers are matched one-to-one to maximise overlap (Hungarian algorithm).
+    ref/hyp: [{"speaker", "start", "end"}]; turns of different speakers may overlap.
+    Frames within `collar` of a reference boundary are not scored (boundaries are fuzzy even for
+    human annotators); `uem` limits scoring to (start, end). Speakers are matched one-to-one to
+    maximise overlap (Hungarian algorithm). In a frame with R reference and H hypothesis speakers:
+    missed = max(0, R − H), false alarm = max(0, H − R), confusion = min(R, H) − correctly matched.
     """
     from scipy.optimize import linear_sum_assignment
 
-    end = max(t["end"] for t in ref + hyp)
+    end = uem[1] if uem else max(t["end"] for t in ref + hyp)
     n = int(np.ceil(end / step)) + 1
 
-    def frames(turns):
+    def matrix(turns):
         labels = sorted({t["speaker"] for t in turns})
-        arr = np.full(n, -1)
+        m = np.zeros((max(1, len(labels)), n), bool)
         for t in turns:
-            arr[int(t["start"] / step):int(t["end"] / step)] = labels.index(t["speaker"])
-        return arr, len(labels)
+            m[labels.index(t["speaker"]), int(t["start"] / step):int(t["end"] / step)] = True
+        return m, len(labels)
 
-    r, nr = frames(ref)
-    h, nh = frames(hyp)
+    r, nr = matrix(ref)
+    h, nh = matrix(hyp)
     scored = np.ones(n, bool)
+    if uem:
+        scored[: int(uem[0] / step)] = False
     for t in ref:
         for b in (t["start"], t["end"]):
             scored[max(0, int((b - collar) / step)):int((b + collar) / step)] = False
-    r, h = r[scored], h[scored]
-    speech = r >= 0
-    overlap = np.zeros((nr, nh))
-    np.add.at(overlap, (r[speech & (h >= 0)], h[speech & (h >= 0)]), 1)
+    r, h = r[:, scored], h[:, scored]
+    rc, hc = r.sum(0), h.sum(0)
+    overlap = r.astype(np.int32) @ h.T.astype(np.int32)
     rows, cols = linear_sum_assignment(-overlap)
     correct = overlap[rows, cols].sum()
-    missed = int((speech & (h < 0)).sum())
-    false_alarm = int((~speech & (h >= 0)).sum())
-    confusion = int((speech & (h >= 0)).sum() - correct)
-    total = int(speech.sum())
+    total = int(rc.sum())
+    missed = int(np.maximum(0, rc - hc).sum())
+    false_alarm = int(np.maximum(0, hc - rc).sum())
+    confusion = int(np.minimum(rc, hc).sum() - correct)
     return {
         "der": round((missed + false_alarm + confusion) / total, 4),
         "missed": round(missed / total, 4),
         "false_alarm": round(false_alarm / total, 4),
         "confusion": round(confusion / total, 4),
+        "overlap_share": round(float((rc > 1).sum() / max(1, (rc > 0).sum())), 4),
         "speakers_ref": nr,
         "speakers_hyp": nh,
     }
@@ -92,4 +96,8 @@ if __name__ == "__main__":
     merged = [{"speaker": "x", "start": 0, "end": 20}]  # both people as one speaker: half is confusion
     d = der(ref, merged)
     assert abs(d["confusion"] - 0.5) < 0.01 and d["missed"] == 0, d
+    # Overlap: both speak 5–10 s; a single-speaker hypothesis misses one of them there.
+    ov_ref = [{"speaker": "A", "start": 0, "end": 10}, {"speaker": "B", "start": 5, "end": 20}]
+    d = der(ov_ref, perfect, collar=0)
+    assert abs(d["missed"] - 5 / 25) < 0.01 and d["false_alarm"] == 0, d
     print("metrics ok")

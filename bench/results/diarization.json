@@ -2,85 +2,93 @@
  "sfera": {
   "audio_seconds": 118.2,
   "speakers": 4,
-  "asr_seconds": 14.3,
+  "asr_seconds": 15.5,
   "wer": 0.0635,
   "clustering_auto": {
    "der": 0.0273,
    "missed": 0.0083,
    "false_alarm": 0.0183,
    "confusion": 0.0007,
+   "overlap_share": 0.0,
    "speakers_ref": 4,
    "speakers_hyp": 4,
-   "seconds": 2.4
+   "seconds": 2.2
   },
   "clustering_oracle_count": {
    "der": 0.0273,
    "missed": 0.0083,
    "false_alarm": 0.0183,
    "confusion": 0.0007,
+   "overlap_share": 0.0,
    "speakers_ref": 4,
    "speakers_hyp": 4,
-   "seconds": 0.3
+   "seconds": 0.4
   },
   "pyannote_auto": {
    "der": 0.0268,
    "missed": 0.0053,
    "false_alarm": 0.0183,
    "confusion": 0.0032,
+   "overlap_share": 0.0,
    "speakers_ref": 4,
    "speakers_hyp": 4,
-   "seconds": 13.3
+   "seconds": 10.1
   },
   "pyannote_oracle_count": {
    "der": 0.0268,
    "missed": 0.0053,
    "false_alarm": 0.0183,
    "confusion": 0.0032,
+   "overlap_share": 0.0,
    "speakers_ref": 4,
    "speakers_hyp": 4,
-   "seconds": 8.2
+   "seconds": 8.8
   }
  },
  "client": {
   "audio_seconds": 81.4,
   "speakers": 3,
-  "asr_seconds": 6.9,
+  "asr_seconds": 7.4,
   "wer": 0.0058,
   "clustering_auto": {
    "der": 0.015,
    "missed": 0.0052,
    "false_alarm": 0.0099,
    "confusion": 0.0,
+   "overlap_share": 0.0,
    "speakers_ref": 3,
    "speakers_hyp": 3,
-   "seconds": 1.2
+   "seconds": 1.5
   },
   "clustering_oracle_count": {
    "der": 0.015,
    "missed": 0.0052,
    "false_alarm": 0.0099,
    "confusion": 0.0,
+   "overlap_share": 0.0,
    "speakers_ref": 3,
    "speakers_hyp": 3,
-   "seconds": 0.2
+   "seconds": 0.3
   },
   "pyannote_auto": {
    "der": 0.0383,
    "missed": 0.0052,
    "false_alarm": 0.0134,
    "confusion": 0.0197,
+   "overlap_share": 0.0,
    "speakers_ref": 3,
    "speakers_hyp": 3,
-   "seconds": 6.0
+   "seconds": 6.2
   },
   "pyannote_oracle_count": {
    "der": 0.0383,
    "missed": 0.0052,
    "false_alarm": 0.0134,
    "confusion": 0.0197,
+   "overlap_share": 0.0,
    "speakers_ref": 3,
    "speakers_hyp": 3,
-   "seconds": 5.5
+   "seconds": 6.1
   }
  }
 }

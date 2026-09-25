@@ -72,6 +72,39 @@ def main() -> None:
             "",
         ]
 
+    ami = load("ami.json")
+    if ami:
+        out += [
+            "**Диаризация на реальных совещаниях** — [AMI Meeting Corpus](https://groups.inf.ed.ac.uk/ami/corpus/) (CC BY 4.0), тестовые встречи, по 15 минут каждой, "
+            "эталонная разметка — [BUTSpeechFIT/AMI-diarization-setup](https://github.com/BUTSpeechFIT/AMI-diarization-setup). Встречи на английском: "
+            "диаризация от языка не зависит. Стандартный DER: допуск 0,25 с, перебивания учитываются (`bench/ami.py`). "
+            "Две цифры: сама диаризация и итоговая стенограмма, где каждое распознанное слово отдано одному спикеру.",
+            "",
+            "| Встреча | Перебивания | Встроенная: диаризация / стенограмма | pyannote: диаризация / стенограмма |",
+            "|---|---|---|---|",
+        ]
+        acc = {}
+        for m, r in ami.items():
+            c, p_ = r.get("clustering_auto"), r.get("pyannote_auto")
+            ov = (c or p_)["diarizer"]["overlap_share"]
+            cell = lambda x: f"{pct(x['diarizer']['der'])} / {pct(x['transcript']['der'])}" if x else "—"  # noqa: E731
+            out.append(f"| {m}, {r['speakers']} спикера | {pct(ov)} речи | {cell(c)} | {cell(p_)} |")
+            for k, x in (("c", c), ("p", p_)):
+                if x:
+                    acc.setdefault(k, []).append((x["diarizer"]["der"], x["transcript"]["der"], x["seconds"]))
+        avg = {k: [sum(col) / len(col) for col in zip(*v)] for k, v in acc.items()}
+        if "c" in avg and "p" in avg:
+            c, p_ = avg["c"], avg["p"]
+            out += [
+                f"| **Среднее** | | **{pct(c[0])} / {pct(c[1])}** | **{pct(p_[0])} / {pct(p_[1])}** |",
+                "",
+                f"pyannote как диаризатор в {str(round(c[0] / p_[0], 1)).replace('.', ',')} раза точнее: у неё свой детектор речи, а встроенный алгоритм видит речь только там, где Whisper распознал слова. "
+                f"В итоговой стенограмме разница почти исчезает ({pct(c[1])} против {pct(p_[1])}): потолок задаёт распознавание — Whisper пропускает короткие «угу» и одновременную речь. "
+                f"Путают спикеров оба редко, 1–4 % речи. Встроенный алгоритм работает в {p_[2] / c[2]:.0f} раз быстрее ({c[2]:.0f} с против {p_[2]:.0f} с на 15 минут). "
+                "По умолчанию («Авто») — pyannote.",
+            ]
+        out.append("")
+
     s = load("retrieval.json")
     if s:
         e5 = s.get("intfloat/multilingual-e5-small", {})
