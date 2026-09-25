@@ -99,7 +99,7 @@ export default function Settings() {
         <h2>Разделение по спикерам</h2>
         <p className="muted">
           {s.pyannote_available
-            ? 'pyannote точнее определяет, кто когда говорит (на реальных совещаниях ошибок почти вдвое меньше); встроенный алгоритм в ~14 раз быстрее, а итоговая стенограмма у них почти одинаковая.'
+            ? 'Рекомендуется pyannote: на живых разговорах она ошибается в 2–6 раз реже. Встроенный алгоритм в ~14 раз быстрее, но путает людей, которые перехватывают слово без паузы.'
             : 'pyannote недоступна: примите условия модели на Hugging Face и выполните python -m app.download. Пока работает встроенный алгоритм.'}
         </p>
         <div className="seg-control">
@@ -107,7 +107,7 @@ export default function Settings() {
             [
               ['auto', 'Авто'],
               ['pyannote', 'pyannote'],
-              ['clustering', 'Встроенная, быстрее'],
+              ['clustering', 'Встроенная (черновик)'],
             ] as const
           ).map(([id, label]) => (
             <button key={id} className={s.diarization === id ? 'on' : ''} onClick={() => set('diarization', id)} disabled={id === 'pyannote' && !s.pyannote_available}>
