@@ -164,7 +164,7 @@ def stage_index(mid: str, progress: Reporter) -> None:
     with Session() as db:
         segs = db.query(Segment).filter(Segment.meeting_id == mid).order_by(Segment.idx).all()
         names = {sp.id: sp.name for sp in db.get(Meeting, mid).speakers}
-    # ponytail: one vector per speaker turn; add overlapping windows if long monologues hurt recall.
+    # One vector per speaker turn. Add overlapping windows if long monologues start hurting recall.
     vecs = ml.embed([f"{names[s.speaker_id]}: {s.text_clean}" for s in segs])
     progress(0.9)
     with Session.begin() as db:

@@ -29,7 +29,7 @@ def claim() -> str | None:
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(message)s")
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    # ponytail: single-worker recovery — jobs left "processing" by a crash are re-queued at start.
+    # Single-worker recovery: jobs left "processing" by a crash are re-queued at start.
     # With several workers, add a heartbeat column and re-queue only stale jobs.
     while True:
         try:

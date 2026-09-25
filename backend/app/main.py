@@ -187,7 +187,7 @@ def reprocess(mid: str, stage: str = Query("asr", pattern="^(asr|diarize|analyze
 
 @app.get("/api/meetings/{mid}/events")
 async def events(mid: str, request: Request):
-    """SSE stream of processing progress. ponytail: polls the DB twice a second; LISTEN/NOTIFY if many clients watch."""
+    """SSE stream of processing progress. Polls the DB twice a second; switch to LISTEN/NOTIFY if many clients watch."""
 
     def snapshot():
         with Session() as db:
