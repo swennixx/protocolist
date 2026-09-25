@@ -1,0 +1,16 @@
+# Shared by macOS and Linux. Install one of requirements-mac.txt / requirements-linux.txt.
+fastapi==0.141.1
+uvicorn[standard]==0.53.0
+SQLAlchemy==2.1.0
+psycopg[binary]==3.3.6
+alembic==1.20.0
+pgvector==0.5.0
+httpx==0.28.1
+python-docx==1.2.0
+numpy==2.5.3
+scipy==1.18.1
+scikit-learn==1.9.1
+torch==2.14.0
+torchaudio==2.11.0
+pyannote.audio==4.0.7
+sentence-transformers==6.1.0

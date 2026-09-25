@@ -1,0 +1,22 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      # Unit tests cover the pure logic (text, alignment, clustering); models are not downloaded in CI.
+      - run: pip install numpy==2.5.3 scipy==1.18.1 scikit-learn==1.9.1 pytest==9.1.1 num2words==0.5.14
+      - run: cd backend && pytest -q
+      - run: python bench/metrics.py
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: web/package-lock.json }
+      - run: cd web && npm ci && npm run build

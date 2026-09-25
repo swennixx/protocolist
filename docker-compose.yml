@@ -1,0 +1,51 @@
+# Mac (Apple Silicon): `docker compose up -d db`, then run the API and the worker on the host (MLX needs macOS).
+# Linux:               `docker compose --profile full up -d --build` runs everything in containers (faster-whisper on CPU).
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: protocolist
+      POSTGRES_PASSWORD: protocolist
+      POSTGRES_DB: protocolist
+    ports: ["127.0.0.1:5433:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: pg_isready -U protocolist
+      interval: 3s
+      retries: 20
+
+  api: &backend
+    profiles: [full]
+    build: ./backend
+    env_file: [{ path: .env, required: false }]
+    environment:
+      DATABASE_URL: postgresql+psycopg://protocolist:protocolist@db:5432/protocolist
+      OLLAMA_URL: http://ollama:11434
+      HF_HUB_OFFLINE: "0"  # first start downloads the models into the hf volume
+    volumes: [data:/data, hf:/root/.cache/huggingface]
+    depends_on:
+      db: { condition: service_healthy }
+
+  worker:
+    <<: *backend
+    command: python -m app.worker
+    depends_on:
+      db: { condition: service_healthy }
+      api: { condition: service_started }  # the API container runs the migrations
+
+  ollama:
+    profiles: [full]
+    image: ollama/ollama
+    volumes: [ollama:/root/.ollama]
+
+  web:
+    profiles: [full]
+    build: ./web
+    ports: ["127.0.0.1:8080:80"]
+    depends_on: [api]
+
+volumes:
+  pgdata:
+  data:
+  hf:
+  ollama:

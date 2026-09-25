@@ -1,0 +1,5 @@
+# Tests and benchmarks
+pytest==9.1.1
+num2words==0.5.14
+pyarrow==25.0.1
+soundfile==0.14.0

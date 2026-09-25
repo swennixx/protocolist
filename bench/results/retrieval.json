@@ -1,0 +1,64 @@
+{
+ "fts_all_words": {
+  "recall@1": 0.143,
+  "recall@3": 0.143,
+  "mrr@10": 0.143
+ },
+ "fts": {
+  "recall@1": 0.357,
+  "recall@3": 0.643,
+  "mrr@10": 0.488
+ },
+ "intfloat/multilingual-e5-small": {
+  "vector": {
+   "recall@1": 0.786,
+   "recall@3": 0.857,
+   "mrr@10": 0.848
+  },
+  "hybrid": {
+   "recall@1": 0.786,
+   "recall@3": 0.857,
+   "mrr@10": 0.848
+  },
+  "ms_per_text": 8.1
+ },
+ "intfloat/multilingual-e5-base": {
+  "vector": {
+   "recall@1": 0.786,
+   "recall@3": 0.857,
+   "mrr@10": 0.851
+  },
+  "hybrid": {
+   "recall@1": 0.714,
+   "recall@3": 0.857,
+   "mrr@10": 0.815
+  },
+  "ms_per_text": 37.8
+ },
+ "intfloat/multilingual-e5-large": {
+  "vector": {
+   "recall@1": 0.786,
+   "recall@3": 0.857,
+   "mrr@10": 0.846
+  },
+  "hybrid": {
+   "recall@1": 0.714,
+   "recall@3": 0.857,
+   "mrr@10": 0.81
+  },
+  "ms_per_text": 116.4
+ },
+ "deepvk/USER-bge-m3": {
+  "vector": {
+   "recall@1": 0.643,
+   "recall@3": 0.786,
+   "mrr@10": 0.758
+  },
+  "hybrid": {
+   "recall@1": 0.714,
+   "recall@3": 0.786,
+   "mrr@10": 0.794
+  },
+  "ms_per_text": 123.4
+ }
+}

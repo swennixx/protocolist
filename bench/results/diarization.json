@@ -1,0 +1,25 @@
+{
+ "audio_seconds": 118.2,
+ "asr_seconds": 17.3,
+ "wer": 0.0635,
+ "auto": {
+  "der": 0.0273,
+  "missed": 0.0083,
+  "false_alarm": 0.0183,
+  "confusion": 0.0007,
+  "speakers_ref": 4,
+  "speakers_hyp": 4,
+  "backend": "clustering",
+  "seconds": 8.0
+ },
+ "oracle_count": {
+  "der": 0.0273,
+  "missed": 0.0083,
+  "false_alarm": 0.0183,
+  "confusion": 0.0007,
+  "speakers_ref": 4,
+  "speakers_hyp": 4,
+  "backend": "clustering",
+  "seconds": 0.3
+ }
+}
