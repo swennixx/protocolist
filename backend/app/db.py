@@ -120,6 +120,7 @@ DEFAULT_SETTINGS = {
     "template": "short",
     "glossary": [],
     "deleteAudio": False,
+    "diarization": "auto",  # auto = pyannote when available; clustering = built-in, faster
 }
 
 

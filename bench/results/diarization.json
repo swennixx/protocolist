@@ -1,25 +1,86 @@
 {
- "audio_seconds": 118.2,
- "asr_seconds": 17.3,
- "wer": 0.0635,
- "auto": {
-  "der": 0.0273,
-  "missed": 0.0083,
-  "false_alarm": 0.0183,
-  "confusion": 0.0007,
-  "speakers_ref": 4,
-  "speakers_hyp": 4,
-  "backend": "clustering",
-  "seconds": 8.0
+ "sfera": {
+  "audio_seconds": 118.2,
+  "speakers": 4,
+  "asr_seconds": 14.3,
+  "wer": 0.0635,
+  "clustering_auto": {
+   "der": 0.0273,
+   "missed": 0.0083,
+   "false_alarm": 0.0183,
+   "confusion": 0.0007,
+   "speakers_ref": 4,
+   "speakers_hyp": 4,
+   "seconds": 2.4
+  },
+  "clustering_oracle_count": {
+   "der": 0.0273,
+   "missed": 0.0083,
+   "false_alarm": 0.0183,
+   "confusion": 0.0007,
+   "speakers_ref": 4,
+   "speakers_hyp": 4,
+   "seconds": 0.3
+  },
+  "pyannote_auto": {
+   "der": 0.0268,
+   "missed": 0.0053,
+   "false_alarm": 0.0183,
+   "confusion": 0.0032,
+   "speakers_ref": 4,
+   "speakers_hyp": 4,
+   "seconds": 13.3
+  },
+  "pyannote_oracle_count": {
+   "der": 0.0268,
+   "missed": 0.0053,
+   "false_alarm": 0.0183,
+   "confusion": 0.0032,
+   "speakers_ref": 4,
+   "speakers_hyp": 4,
+   "seconds": 8.2
+  }
  },
- "oracle_count": {
-  "der": 0.0273,
-  "missed": 0.0083,
-  "false_alarm": 0.0183,
-  "confusion": 0.0007,
-  "speakers_ref": 4,
-  "speakers_hyp": 4,
-  "backend": "clustering",
-  "seconds": 0.3
+ "client": {
+  "audio_seconds": 81.4,
+  "speakers": 3,
+  "asr_seconds": 6.9,
+  "wer": 0.0058,
+  "clustering_auto": {
+   "der": 0.015,
+   "missed": 0.0052,
+   "false_alarm": 0.0099,
+   "confusion": 0.0,
+   "speakers_ref": 3,
+   "speakers_hyp": 3,
+   "seconds": 1.2
+  },
+  "clustering_oracle_count": {
+   "der": 0.015,
+   "missed": 0.0052,
+   "false_alarm": 0.0099,
+   "confusion": 0.0,
+   "speakers_ref": 3,
+   "speakers_hyp": 3,
+   "seconds": 0.2
+  },
+  "pyannote_auto": {
+   "der": 0.0383,
+   "missed": 0.0052,
+   "false_alarm": 0.0134,
+   "confusion": 0.0197,
+   "speakers_ref": 3,
+   "speakers_hyp": 3,
+   "seconds": 6.0
+  },
+  "pyannote_oracle_count": {
+   "der": 0.0383,
+   "missed": 0.0052,
+   "false_alarm": 0.0134,
+   "confusion": 0.0197,
+   "speakers_ref": 3,
+   "speakers_hyp": 3,
+   "seconds": 5.5
+  }
  }
 }

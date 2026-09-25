@@ -44,7 +44,7 @@ def main() -> None:
         if t and l:
             speedup = str(round(l["rtf"] / t["rtf"], 1)).replace(".", ",")
             out += ["", f"По умолчанию стоит large-v3-turbo: на farfield WER {pct(t['wer'])} против {pct(l['wer'])} у large-v3, а работает в {speedup} раза быстрее."]
-        d = load("diarization.json")
+        d = load("diarization.json").get("sfera")
         if d:
             rtf = str(round(d["asr_seconds"] / d["audio_seconds"], 2)).replace(".", ",")
             out += ["", f"RTF в таблице завышен для всех моделей: каждая фраза Golos длится 2–5 с, а Whisper обрабатывает окно в 30 с. На сплошной записи встречи turbo работает с RTF {rtf} ({d['audio_seconds']:.0f} с записи за {d['asr_seconds']:.0f} с, вместе с загрузкой модели)."]
@@ -52,16 +52,23 @@ def main() -> None:
 
     d = load("diarization.json")
     if d:
-        a, o = d["auto"], d["oracle_count"]
+        titles = {"sfera": "Планёрка, 4 спикера", "client": "Созвон с клиентом, 3 спикера"}
         out += [
-            f"**Диаризация** — синтетическая встреча из 16 реплик 4 спикеров ({d['audio_seconds']:.0f} с, `bench/make_synthetic.py`), встроенный алгоритм, DER с допуском 0,25 с на границах:",
+            "**Диаризация** — две синтетические встречи (`bench/make_synthetic.py`), DER с допуском 0,25 с на границах (меньше — лучше), число спикеров определяется автоматически:",
             "",
-            "| Число спикеров | Найдено | DER | Из них путаница спикеров |",
-            "|---|---|---|---|",
-            f"| определяется автоматически | {a['speakers_hyp']} из {a['speakers_ref']} | {pct(a['der'])} | {pct(a['confusion'])} |",
-            f"| задано пользователем | {o['speakers_hyp']} из {o['speakers_ref']} | {pct(o['der'])} | {pct(o['confusion'])} |",
+            "| Встреча | Встроенная (кластеризация) | pyannote community-1 |",
+            "|---|---|---|",
+        ]
+        for name, r in d.items():
+            c, p_ = r.get("clustering_auto"), r.get("pyannote_auto")
+            cell = lambda x: f"DER {pct(x['der'])}, {x['speakers_hyp']} из {x['speakers_ref']} спикеров, {str(x['seconds']).replace('.', ',')} с" if x else "—"  # noqa: E731
+            out.append(f"| {titles.get(name, name)} ({r['audio_seconds']:.0f} с) | {cell(c)} | {cell(p_)} |")
+        wers = ", ".join(f"{titles.get(n, n).split(',')[0].lower()} — {pct(r['wer'])}" for n, r in d.items())
+        out += [
             "",
-            f"WER всего пайплайна на этой записи — {pct(d['wer'])}. Синтетика — один голос TTS с разным тоном: это проверка на регрессии, а не оценка на реальных встречах.",
+            f"WER всего пайплайна на этих записях: {wers}. Синтетика — один голос TTS с разным тоном, без перебиваний и шума: "
+            "на ней встроенный алгоритм не хуже pyannote и в разы быстрее, но это проверка на регрессии, а не оценка на реальных встречах. "
+            "pyannote умеет разбирать одновременную речь, поэтому в режиме «Авто» используется она, если доступна; выбор — в настройках.",
             "",
         ]
 

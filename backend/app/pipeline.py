@@ -86,7 +86,9 @@ def stage_diarize(mid: str, progress: Reporter) -> None:
     with Session() as db:
         m = db.get(Meeting, mid)
         num, words = m.num_speakers, m.asr["words"]
-    turns, backend = ml.diarize(paths(mid)["wav"], num, progress, words)
+        choice = get_settings(db)["diarization"]
+    backend = choice if choice == "clustering" or (choice == "pyannote" and ml.diarization_backend() == "pyannote") else None
+    turns, backend = ml.diarize(paths(mid)["wav"], num, progress, words, backend=backend)
     segs = build_segments(words, turns)
 
     with Session.begin() as db:

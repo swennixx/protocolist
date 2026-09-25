@@ -138,6 +138,13 @@ def _speaker_model():
     return model.eval().to(_device())
 
 
+def pyannote_downloaded() -> bool:
+    """Cheap check for the API: is the gated pipeline in the local Hugging Face cache?"""
+    from huggingface_hub import try_to_load_from_cache
+
+    return isinstance(try_to_load_from_cache(DIARIZATION_MODEL, "config.yaml"), str)
+
+
 @cache  # decided once per worker process; restart the worker after getting access to pyannote
 def diarization_backend() -> str:
     """'pyannote' when the gated pipeline is reachable, else 'clustering'."""
@@ -148,10 +155,11 @@ def diarization_backend() -> str:
         return "clustering"
 
 
-def diarize(wav: str, num_speakers: int | None, progress: Progress, words: list[dict]) -> tuple[list[dict], str]:
-    """Returns (turns, backend). Turns: [{"speaker", "start", "end"}]."""
+def diarize(wav: str, num_speakers: int | None, progress: Progress, words: list[dict], backend: str | None = None) -> tuple[list[dict], str]:
+    """Returns (turns, backend). Turns: [{"speaker", "start", "end"}].
+    backend: None picks pyannote when available; "clustering" / "pyannote" force one (bench)."""
     audio = load_wav(wav)
-    if diarization_backend() == "pyannote":
+    if (backend or diarization_backend()) == "pyannote":
         return _diarize_pyannote(audio, num_speakers, progress), "pyannote"
     return _diarize_clustering(audio, num_speakers, progress, words), "clustering"
 

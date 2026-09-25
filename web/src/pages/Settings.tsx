@@ -96,6 +96,28 @@ export default function Settings() {
       </section>
 
       <section className="panel">
+        <h2>Разделение по спикерам</h2>
+        <p className="muted">
+          {s.pyannote_available
+            ? 'pyannote точнее разбирает перебивания и шум; встроенный алгоритм в 5–10 раз быстрее.'
+            : 'pyannote недоступна: примите условия модели на Hugging Face и выполните python -m app.download. Пока работает встроенный алгоритм.'}
+        </p>
+        <div className="seg-control">
+          {(
+            [
+              ['auto', 'Авто'],
+              ['pyannote', 'pyannote'],
+              ['clustering', 'Встроенная, быстрее'],
+            ] as const
+          ).map(([id, label]) => (
+            <button key={id} className={s.diarization === id ? 'on' : ''} onClick={() => set('diarization', id)} disabled={id === 'pyannote' && !s.pyannote_available}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
         <h2>Анализ встречи</h2>
         <div className="field-row">
           <label className="field">

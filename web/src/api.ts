@@ -54,6 +54,8 @@ export type Settings = {
   template: string
   glossary: string[]
   deleteAudio: boolean
+  diarization: 'auto' | 'clustering' | 'pyannote'
+  pyannote_available?: boolean
 }
 
 export type Progress = Pick<MeetingBrief, 'status' | 'stage' | 'stage_progress' | 'error' | 'received' | 'size'>

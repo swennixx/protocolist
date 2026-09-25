@@ -368,11 +368,12 @@ class SettingsBody(BaseModel):
     template: str = Field(pattern="^(short|full|protocol)$")
     glossary: list[str] = Field(max_length=200)
     deleteAudio: bool
+    diarization: str = Field(default="auto", pattern="^(auto|clustering|pyannote)$")
 
 
 @app.get("/api/settings")
 def read_settings(db=Depends(get_db)):
-    return get_settings(db)
+    return {**get_settings(db), "pyannote_available": ml.pyannote_downloaded()}
 
 
 @app.put("/api/settings")
@@ -381,7 +382,7 @@ def write_settings(body: SettingsBody, db=Depends(get_db)):
     row.data = body.model_dump()
     db.merge(row)
     db.commit()
-    return get_settings(db)
+    return read_settings(db)
 
 
 @app.get("/api/health")
